@@ -1,2 +1,3 @@
 # hookah
-Small, webhook based deployment utility
+
+A simple build automation pipeline
