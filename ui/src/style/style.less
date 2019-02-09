@@ -1,0 +1,29 @@
+body {
+  font-family: sans-serif;
+}
+
+.container {
+  width: 1020px;
+  margin: 0 auto;
+}
+
+.repo-summary-box {
+  display: inline-block;
+  padding: 16px;
+  box-sizing: border-box;
+  margin: 8px;
+  width: 324px;
+  height: 120px;
+  background-color: gray;
+  color: white;
+  cursor: pointer;
+  .repo-name {
+    font-size: 20px;
+  }
+  &.success {
+    background-color: limegreen;
+  }
+  &.failed {
+    background-color: red;
+  }
+}

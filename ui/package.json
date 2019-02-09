@@ -1,0 +1,12 @@
+{
+  "name": "hookah-ui",
+  "version": "1.0.0",
+  "dependencies": {
+    "preact": "^8.4.2",
+    "preact-router": "^2.6.1"
+  },
+  "devDependencies": {
+    "less": "^3.9.0",
+    "typescript": "^3.3.3"
+  }
+}
