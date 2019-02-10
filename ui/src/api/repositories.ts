@@ -1,10 +1,9 @@
 
 export default class RepositoryAPI {
-  static async GetAllSummaries() : Promise<RepositorySommary[]> {
+  static async GetAllSummaries() : Promise<ProjectSommary[]> {
     return [
       {
         name: "Test",
-        id: '23fwa3fa3',
         lastBuild: {
           id: "2cd73a64a0e10f42c61a38799132afee",
           start: 1549745380,
@@ -14,7 +13,6 @@ export default class RepositoryAPI {
       },
       {
         name: "Website",
-        id: '8asd7f8f734',
         lastBuild: {
           id: "2cd73a64a0e10f42c61a38799132afee",
           start: 1549745380,
@@ -24,7 +22,6 @@ export default class RepositoryAPI {
       },
       {
         name: "ProfilNav",
-        id: '3498v4hv98',
         lastBuild: {
           id: "2cd73a64a0e10f42c61a38799132afee",
           start: 1549745380,
@@ -34,7 +31,6 @@ export default class RepositoryAPI {
       },
       {
         name: "MeetingDashboard",
-        id: '0934fn0vns04',
         lastBuild: {
           id: "2cd73a64a0e10f42c61a38799132afee",
           start: 1549745380,
@@ -45,10 +41,9 @@ export default class RepositoryAPI {
     ];
   }
 
-  static async GetDetailsById(repoId: string) : Promise<Repository> {
+  static async GetDetailsByName(name: string) : Promise<Project> {
     return {
-      id: '2cd73a64a0e10f42c61a38799132afee',
-      name: 'Website',
+      projectName: 'Website',
       builds: [
         {
           id: "2cd73a64a0e10f42c61a38799132afee",

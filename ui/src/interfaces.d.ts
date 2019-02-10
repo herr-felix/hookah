@@ -6,14 +6,12 @@ interface BuildHistory {
   status: string
 }
 
-interface RepositorySommary {
-  id: string,
+interface ProjectSommary {
   name: string,
   lastBuild: BuildHistory
 }
 
-interface Repository {
-  id: string,
-  name: string
+interface Project {
+  projectName: string
   builds: Array<BuildHistory>
 }
