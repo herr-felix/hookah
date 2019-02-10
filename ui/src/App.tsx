@@ -1,12 +1,14 @@
 import Router from 'preact-router';
 import { h, render } from 'preact';
-import Repositories from './pages/Repositories';
+import RepositoriesPage from './pages/Repositories';
+import RepositoryPage from './pages/Repository';
 /** @jsx h */
 
 const Main = () => (
   <div class="container">
     <Router>
-      <Repositories default />
+      <RepositoriesPage default />
+      <RepositoryPage path='/repo/:repoId' />
     </Router>
   </div>
 );

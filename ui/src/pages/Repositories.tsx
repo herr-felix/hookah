@@ -4,10 +4,10 @@ import RepositoryAPI from '../api/repositories';
 /** @jsx h */
 
 interface RepositoriesState {
-  summaries: any[]
+  summaries: RepositorySommary[]
 }
 
-export default class Repositories extends Component<any, RepositoriesState> {
+export default class RepositoriesPage extends Component<any, RepositoriesState> {
   private refreshTimer = 0;
   constructor(props: any) {
     super(props)
@@ -18,8 +18,8 @@ export default class Repositories extends Component<any, RepositoriesState> {
   }
 
   fetchSummaries() {
-    this.setState({
-      summaries: RepositoryAPI.GetAllSummaries()
+    RepositoryAPI.GetAllSummaries().then((summaries) => {
+      this.setState({ summaries: summaries })
     })
   }
 
@@ -35,19 +35,17 @@ export default class Repositories extends Component<any, RepositoriesState> {
   }
 
   clickRepo(id: string) {
-    console.log(`boo ${id}`);
     route(`/repo/${id}`)
   }
 
   render(props: any, state: RepositoriesState) {
     let boxes = state.summaries.map(s => {
       return <div key={s.id} onClick={(e) => {this.clickRepo(s.id)}} class={"repo-summary-box " + s.lastBuild.status}>
-        <span class="repo-name">
+        <div class="repo-name">
           {s.name}
-        </span>
+        </div>
       </div>;
     })
     return <div class="boxes">{boxes}</div>
   }
 }
-

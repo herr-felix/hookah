@@ -2,8 +2,14 @@ body {
   font-family: sans-serif;
 }
 
+@page-width: 1020px;
+
+@success-color: limegreen;
+@failed-color: red;
+@default-color: deepskyblue;
+
 .container {
-  width: 1020px;
+  width: @page-width;
   margin: 0 auto;
 }
 
@@ -17,13 +23,54 @@ body {
   background-color: gray;
   color: white;
   cursor: pointer;
+  border-radius: 4px;
   .repo-name {
     font-size: 20px;
   }
   &.success {
-    background-color: limegreen;
+    background-color: @success-color;
   }
   &.failed {
-    background-color: red;
+    background-color: @failed-color;
   }
+}
+
+.panel {
+  margin-bottom: 32px;
+  background-color: @default-color;
+  border-radius: 4px;
+  width: @page-width;
+  padding: 3px;
+  &.success {
+    background-color: @success-color;
+  }
+  &.failed {
+    background-color: @failed-color;
+  }
+  .head {
+    color: white;
+    padding: 16px;
+    &.title {
+      font-size: 24px;
+    }
+    &.clickable {
+      cursor: pointer;
+    }
+  }
+  .content {
+    border-radius: 4px;
+    padding: 8px;
+    color: #111;
+    background-color: white;
+    table {
+      width: 100%;
+    }
+  }
+}
+.code {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #ddd;
+  color: #333;
+  padding: 1em;
+  white-space: pre-line;
 }
