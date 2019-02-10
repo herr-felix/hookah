@@ -7,10 +7,14 @@ func main() {
 	// Initialize the builspace
 	dockerBuildSpace := buildingspaces.NewDockerBuildingSpace()
 
-	store := sqlitestore.NewSqliteStore()
+	// Initialize the store
+	store, err := sqlitestore.NewSqliteStore("./hookah.db")
+	if err != nil {
+		panic(err)
+	}
 
 	// Start the server
-	server := NewServer(dockerBuildSpace)
+	server := NewServer(dockerBuildSpace, store)
 
 	server.Listen()
 }
