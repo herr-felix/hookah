@@ -4,7 +4,9 @@ import "./model"
 
 // BuildHistoryStore ...
 type BuildHistoryStore interface {
-	GetSummaries() ([]model.ProjectSummary, error)
-	GetBuild(ID string) (*model.BuildHistory, error)
 	SaveBuild(data *model.BuildHistory) error
+	GetLatestBuilds() ([]*model.BuildHistory, error)
+	GetAllBuilds(projectName string) ([]*model.BuildHistory, error)
+	GetBuild(ID string) (*model.BuildHistory, error)
+	GetBuildOutput(ID string) (string, error)
 }

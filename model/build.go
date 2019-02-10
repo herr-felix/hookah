@@ -13,7 +13,7 @@ const (
 type BuildHistory struct {
 	ID          string      `json:"id"`
 	Name        string      `json:"name"`
-	ProjectName string      `json:"projectName"`
+	ProjectName string      `json:"projectName,omitempty"`
 	Start       int64       `json:"start"`
 	Duration    int64       `json:"duration"`
 	Status      BuildStatus `json:"status"`
