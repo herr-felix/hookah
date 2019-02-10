@@ -4,13 +4,13 @@ import (
 	"log"
 	"testing"
 
-	"../internal"
+	"../../model"
 )
 
 func TestDockerBuild(t *testing.T) {
 	bs := NewDockerBuildingSpace()
 
-	req := internal.BuildRequest{
+	req := model.BuildRequest{
 		BuildPath:   ".",
 		ProjectName: "DemoBuild",
 	}

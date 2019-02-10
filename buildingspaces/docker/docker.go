@@ -5,7 +5,7 @@ import (
 	"context"
 	"time"
 
-	"../internal"
+	"../../model"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
@@ -22,7 +22,7 @@ func NewDockerBuildingSpace() *Docker {
 }
 
 // Make execute the build request
-func (dbs *Docker) Make(req internal.BuildRequest) (*internal.BuildHistory, error) {
+func (dbs *Docker) Make(req model.BuildRequest) (*model.BuildHistory, error) {
 
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv)
@@ -53,13 +53,18 @@ func (dbs *Docker) Make(req internal.BuildRequest) (*internal.BuildHistory, erro
 		return nil, err
 	}
 
+	buildStatus := model.SuccessfulBuild // Default to success
+
 	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
 	select {
 	case err := <-errCh:
 		if err != nil {
 			return nil, err
 		}
-	case <-statusCh:
+	case status := <-statusCh:
+		if status.StatusCode != 0 {
+			buildStatus = model.FailedBuild
+		}
 	}
 
 	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: true, ShowStderr: true})
@@ -70,12 +75,13 @@ func (dbs *Docker) Make(req internal.BuildRequest) (*internal.BuildHistory, erro
 	buffer := bytes.NewBuffer([]byte{})
 	stdcopy.StdCopy(buffer, buffer, out)
 
-	return &internal.BuildHistory{
+	return &model.BuildHistory{
 		ID:          resp.ID, // sha256 of this?
+		Name:        "MAKE BUILD NAME DYNAMIC!",
 		ProjectName: req.ProjectName,
 		Start:       startTime.Unix(),
-		Duration:    int32(time.Now().Sub(startTime).Seconds()),
-		Status:      internal.SuccessfulBuild,
+		Duration:    int64(time.Now().Sub(startTime).Seconds()),
+		Status:      buildStatus,
 		Output:      string(buffer.Bytes()),
 	}, nil
 }
