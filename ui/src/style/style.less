@@ -13,7 +13,7 @@ body {
   margin: 0 auto;
 }
 
-.repo-summary-box {
+.project-boxes {
   display: inline-block;
   padding: 16px;
   box-sizing: border-box;
@@ -24,13 +24,13 @@ body {
   color: white;
   cursor: pointer;
   border-radius: 4px;
-  .repo-name {
+  .project-name {
     font-size: 20px;
   }
   &.success {
     background-color: @success-color;
   }
-  &.failed {
+  &.failure {
     background-color: @failed-color;
   }
 }
@@ -44,7 +44,7 @@ body {
   &.success {
     background-color: @success-color;
   }
-  &.failed {
+  &.failure {
     background-color: @failed-color;
   }
   .head {

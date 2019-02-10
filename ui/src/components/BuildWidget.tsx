@@ -51,7 +51,10 @@ export default class BuildWidget extends Component<BuildWidgetProps, BuildWidget
     return <div class="repo-details">
       <div class={"panel " + this.props.build.status}>
         <div class="head clickable" onClick={this.flipOpen.bind(this)}>
-          {(new Date(this.props.build.start*1000)).toJSON()}
+          <span>
+            {this.props.build.status === 'success' ? 'PASS' : 'FAIL'}&nbsp;-&nbsp;
+          </span>
+          {this.props.build.name}
         </div>
         {this.renderBuildDetails()}
       </div>

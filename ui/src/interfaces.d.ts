@@ -1,17 +1,10 @@
 
 interface BuildHistory {
-  id: string,
-  start: number,
-  duration: number,
-  status: string
-}
-
-interface ProjectSommary {
-  name: string,
-  lastBuild: BuildHistory
-}
-
-interface Project {
+  id: string
+  name: string
   projectName: string
-  builds: Array<BuildHistory>
+  start: number
+  duration: number
+  status: string
+  output?: string
 }

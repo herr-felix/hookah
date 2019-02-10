@@ -5,8 +5,8 @@ type BuildStatus string
 
 // The 2 possible build status
 const (
-	SuccessfulBuild BuildStatus = "successful"
-	FailedBuild     BuildStatus = "failed"
+	SuccessfulBuild BuildStatus = "success"
+	FailedBuild     BuildStatus = "failure"
 )
 
 // BuildHistory ..
