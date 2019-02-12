@@ -12,7 +12,7 @@ func TestDockerBuild(t *testing.T) {
 
 	req := model.BuildRequest{
 		BuildPath:   ".",
-		ProjectName: "DemoBuild",
+		ProjectName: "demobuild",
 	}
 
 	h, err := bs.Make(req)

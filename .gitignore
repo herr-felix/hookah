@@ -12,3 +12,4 @@
 *.out
 hookah
 sqlitestore/test.db
+hookah.db
