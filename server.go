@@ -65,6 +65,8 @@ func (s *Server) Listen() {
 		return c.String(200, output)
 	})
 
+	e.Static("/", "ui/dist/")
+
 	go s.Queuer.Start(func(history *model.BuildHistory) {
 		err := s.Store.SaveBuild(history)
 		if err != nil {
@@ -75,6 +77,6 @@ func (s *Server) Listen() {
 		// Do any kind of notification here
 	})
 
-	log.Println("Running on :6666")
-	e.Logger.Fatal(e.Start(":6666"))
+	log.Println("Running on :8080")
+	e.Logger.Fatal(e.Start(":8080"))
 }
