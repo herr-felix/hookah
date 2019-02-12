@@ -9,7 +9,4 @@ RUN apk add musl-dev go
 
 COPY ./build.sh /
 
-# TODO : replace by git clone in dockerfile
-COPY ./demo ./demo
-
 ENTRYPOINT ["/bin/sh", "/build.sh"]

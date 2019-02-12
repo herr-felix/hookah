@@ -22,6 +22,6 @@ type BuildHistory struct {
 
 // BuildRequest ...
 type BuildRequest struct {
-	BuildPath   string // Where the building must happen, relative to the project's root. "." Most of the time
-	ProjectName string
+	BuildPath   string `json:"buildPath"` // Where the building must happen, relative to the project's root. "." Most of the time
+	ProjectName string `json:"projectName"`
 }

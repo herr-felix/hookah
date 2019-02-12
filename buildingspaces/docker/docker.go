@@ -3,6 +3,8 @@ package buildingspaces
 import (
 	"bytes"
 	"context"
+	"log"
+	"path/filepath"
 	"time"
 
 	"../../model"
@@ -21,8 +23,17 @@ func NewDockerBuildingSpace() *Docker {
 	return &Docker{}
 }
 
+func toEnv(key, value string) string {
+	return key + "=" + value
+}
+
 // Make execute the build request
-func (dbs *Docker) Make(req model.BuildRequest) (*model.BuildHistory, error) {
+func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.BuildHistory, error) {
+
+	absHandlersPath, err := filepath.Abs(handlersPath)
+	if err != nil {
+		return nil, err
+	}
 
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv)
@@ -32,9 +43,17 @@ func (dbs *Docker) Make(req model.BuildRequest) (*model.BuildHistory, error) {
 	cli.NegotiateAPIVersion(ctx)
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image: "test",
+		Image: "buildspace:docker",
+		Env: []string{
+			toEnv("BUILD_PATH", req.BuildPath),
+		},
 	}, &container.HostConfig{
 		Mounts: []mount.Mount{
+			{
+				Type:   mount.TypeBind,
+				Source: absHandlersPath,
+				Target: "/opt/handlers",
+			},
 			{
 				Type:   mount.TypeBind,
 				Source: "/var/run/docker.sock",
@@ -53,7 +72,7 @@ func (dbs *Docker) Make(req model.BuildRequest) (*model.BuildHistory, error) {
 		return nil, err
 	}
 
-	buildStatus := model.SuccessfulBuild // Default to success
+	buildStatus := model.SuccessfulBuild
 
 	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
 	select {
@@ -62,6 +81,7 @@ func (dbs *Docker) Make(req model.BuildRequest) (*model.BuildHistory, error) {
 			return nil, err
 		}
 	case status := <-statusCh:
+		log.Println(status)
 		if status.StatusCode != 0 {
 			buildStatus = model.FailedBuild
 		}
