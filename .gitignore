@@ -13,3 +13,5 @@
 hookah
 sqlitestore/test.db
 hookah.db
+buildingspaces/handlers/demo/pass/note.txt
+buildingspaces/handlers/demo/fail/note.txt
