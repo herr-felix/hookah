@@ -1,8 +1,9 @@
 git version
 
 build() {
-  cd "/opt/handlers/demo"
-  # PUT THE PULL HANDLER HERE
+  PROJECT_DIR=$( /bin/sh /opt/handlers/pull/$PULL_HANDLER.sh | tail -1 )
+  echo "Moving to $PROJECT_DIR"
+  cd $PROJECT_DIR
 
   echo "Moving to $BUILD_PATH"
   cd $BUILD_PATH

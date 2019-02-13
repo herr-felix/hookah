@@ -12,6 +12,7 @@ func TestDockerBuildSuccess(t *testing.T) {
 
 	req := model.BuildRequest{
 		BuildPath:   "./pass",
+		PullHandler: "demo",
 		ProjectName: "demobuild",
 	}
 
@@ -34,6 +35,7 @@ func TestDockerBuildFail(t *testing.T) {
 
 	req := model.BuildRequest{
 		BuildPath:   "./fail",
+		PullHandler: "demo",
 		ProjectName: "demobuild",
 	}
 
