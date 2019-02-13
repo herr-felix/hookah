@@ -42,7 +42,7 @@ func (q *BuildQueuer) Start(onBuildEnd func(*model.BuildHistory)) {
 		req, q.requests = q.requests[0], q.requests[1:]
 		go func(r model.BuildRequest) {
 			log.Println("Build started")
-			history, err := q.buildSpace.Make(r)
+			history, err := q.buildSpace.Make(r, "./buildingspaces/handlers") // Handler path more dynamic
 			if err != nil {
 				log.Println(err)
 				return
