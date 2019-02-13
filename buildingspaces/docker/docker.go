@@ -47,6 +47,9 @@ func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.Bui
 		Env: []string{
 			toEnv("BUILD_PATH", req.BuildPath),
 			toEnv("PULL_HANDLER", req.PullHandler),
+			toEnv("PULL_PARAMS", req.PullParams),
+			toEnv("PUSH_HANDLER", req.PushHandler),
+			toEnv("PUSH_PARAMS", req.PushParams),
 		},
 	}, &container.HostConfig{
 		Mounts: []mount.Mount{

@@ -27,7 +27,7 @@ build() {
   fi
 }
 
-build demo 2>&1 # TODO putting 'ts' here without affecting the status code
+build 2>&1 # TODO putting 'ts' here without affecting the status code
 if [ "$?" -ne "0" ]; then
   exit 1
 fi
