@@ -2,10 +2,7 @@ FROM docker
 
 WORKDIR /root/build
 
-RUN apk add make git moreutils --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.9/community
-
-# TODO : Remove this
-RUN apk add musl-dev go
+RUN apk add make git
 
 COPY ./build.sh /
 
