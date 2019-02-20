@@ -1,6 +1,6 @@
 package main
 
-import buildingspaces "./buildingspaces/docker"
+import buildingspaces "./buildspaces/docker"
 import "./sqlitestore"
 
 func main() {
