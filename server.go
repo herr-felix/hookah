@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
 	"./model"
-	"github.com/labstack/echo"
+	"github.com/go-chi/chi"
 )
 
 // Server ...
@@ -24,48 +26,55 @@ func NewServer(queuer *BuildQueuer, store BuildHistoryStore) *Server {
 
 // Listen ...
 func (s *Server) Listen() {
-	e := echo.New()
+	r := chi.NewRouter()
 
 	// POST : Build Request
-	e.POST("/build", func(c echo.Context) error {
+	r.Post("/build", func(w http.ResponseWriter, r *http.Request) {
 		// Decode the body to a model.BuildRequest
-		buildRequest := new(model.BuildRequest)
-		if err := c.Bind(buildRequest); err != nil {
-			return c.String(400, "Could not bind the body to a build request.")
+		var buildRequest *model.BuildRequest
+
+		if err := json.NewDecoder(r.Body).Decode(buildRequest); err != nil {
+			w.WriteHeader(400)
+			w.Write([]byte("Could not bind the body to a build request."))
+			return
 		}
+		defer r.Body.Close()
 		todo := s.Queuer.Queue(buildRequest)
 		log.Println("Build requested")
-		return c.String(200, string(todo))
+		w.Write([]byte(string(todo)))
 	})
 
 	// GET : Latest Builds
-	e.GET("/builds", func(c echo.Context) error {
+	r.Get("/builds", func(w http.ResponseWriter, r *http.Request) {
 		builds, err := s.Store.GetLatestBuilds()
 		if err != nil {
-			return c.String(500, fmt.Sprintf("Error while retrieving the latest builds: %e", err))
+			w.WriteHeader(500)
+			w.Write([]byte(fmt.Sprintf("Error while retrieving the latest builds: %e", err)))
 		}
-		return c.JSON(200, builds)
+		json.NewEncoder(w).Encode(builds)
 	})
 
 	// GET : All Builds by project
-	e.GET("/builds/:project", func(c echo.Context) error {
-		builds, err := s.Store.GetAllBuilds(c.Param("project"))
+	r.Get("/builds/{project}", func(w http.ResponseWriter, r *http.Request) {
+		builds, err := s.Store.GetAllBuilds(chi.URLParam(r, "project"))
 		if err != nil {
-			return c.String(404, fmt.Sprintf("No builds with the projectName '%s'", c.Param("project")))
+			w.WriteHeader(404)
+			fmt.Fprintf(w, "No builds with the projectName '%s'", chi.URLParam(r, "project"))
 		}
-		return c.JSON(200, builds)
+		json.NewEncoder(w).Encode(builds)
 	})
 
 	// GET : Build's output
-	e.GET("/build/output/:buildID", func(c echo.Context) error {
-		output, err := s.Store.GetBuildOutput(c.Param("buildID"))
+	r.Get("/build/output/{buildID}", func(w http.ResponseWriter, r *http.Request) {
+		output, err := s.Store.GetBuildOutput(chi.URLParam(r, "buildID"))
 		if err != nil {
-			return c.String(404, "No builds found")
+			w.WriteHeader(404)
+			fmt.Fprint(w, "No builds found")
 		}
-		return c.String(200, output)
+		fmt.Fprint(w, output)
 	})
 
-	e.Static("/", "ui/dist/")
+	r.Handle("/static", http.FileServer(http.Dir("/ui/dist")))
 
 	go s.Queuer.Start(func(history *model.BuildHistory) {
 		err := s.Store.SaveBuild(history)
@@ -78,5 +87,5 @@ func (s *Server) Listen() {
 	})
 
 	log.Println("Running on :8080")
-	e.Logger.Fatal(e.Start(":8080"))
+	panic(http.ListenAndServe(":8080", r))
 }
