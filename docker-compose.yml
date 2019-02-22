@@ -1,0 +1,9 @@
+version: '3'
+services:
+  hookah:
+    image: "felixfx/hookah"
+    volumes: 
+      - "./handlers:/opt/hookah/handlers" # Change the src to whatever you want
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    ports:
+      - "8080:8080"
