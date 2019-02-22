@@ -8,5 +8,4 @@ type BuildHistoryStore interface {
 	GetLatestBuilds() ([]*model.BuildHistory, error)
 	GetAllBuilds(projectName string) ([]*model.BuildHistory, error)
 	GetBuild(ID string) (*model.BuildHistory, error)
-	GetBuildOutput(ID string) (string, error)
 }

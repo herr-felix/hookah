@@ -70,7 +70,8 @@ func (s *SqliteStore) GetAllBuilds(projectName string) ([]*model.BuildHistory, e
 			projectName,
 			start,
 			duration,
-			status
+			status,
+			output
 		FROM builds 
 		WHERE projectName = ?
 		ORDER BY start DESC;`)
@@ -108,34 +109,6 @@ func (s *SqliteStore) GetAllBuilds(projectName string) ([]*model.BuildHistory, e
 	}
 
 	return builds, nil
-}
-
-// GetBuildOutput get the output logs of a build
-func (s *SqliteStore) GetBuildOutput(ID string) (string, error) {
-	db, err := s.open()
-	if err != nil {
-		return "", err
-	}
-	defer db.Close()
-
-	stmt, err := db.Prepare(`
-		SELECT
-			output
-		FROM builds 
-		WHERE id = ?;`)
-
-	if err != nil {
-		return "", err
-	}
-	defer stmt.Close()
-
-	var output string
-	err = stmt.QueryRow(ID).Scan(&output)
-	if err != nil {
-		return "", err
-	}
-
-	return output, nil
 }
 
 // GetLatestBuilds get the latest build history for each projects

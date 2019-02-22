@@ -1,5 +1,4 @@
 import { h, Component } from 'preact';
-import BuildAPI from '../api/build';
 /** @jsx h */
 
 interface BuildWidgetProps {
@@ -8,55 +7,32 @@ interface BuildWidgetProps {
 
 interface BuildWidgetState {
   toggleOpen: boolean
-  output: string
 }
 
 export default class BuildWidget extends Component<BuildWidgetProps, BuildWidgetState> {
   constructor(props: BuildWidgetProps) {
     super(props)
     this.state = {
-      toggleOpen: false,
-      output: null
+      toggleOpen: false
     }
   }
 
-  fetchBuildOutput() {
-    BuildAPI.getOutputById(this.props.build.id).then((output) => {
-      let state = this.state as BuildWidgetState
-      state.output = output
-      this.setState(state)
-    })
-  }
-
-  renderBuildDetails() {
-    if (!this.state.toggleOpen) {
-      return null
-    }
-    const outputPart = this.state.output ? <div class="code">{this.state.output}</div> : 'Loading...'
-    return <div class="content">
-      {outputPart}
-    </div>
-  }
-
-  flipOpen() {
-    let state = this.state as BuildWidgetState
-    state.toggleOpen = !state.toggleOpen
-    if (state.output === null) {
-      this.fetchBuildOutput()
-    }
-    this.setState(state);
+  flip() {
+    this.setState({toggleOpen: !this.state.toggleOpen});
   }
 
   render(props: BuildWidgetProps, state: BuildWidgetState) {
     return <div class="repo-details">
       <div class={"panel " + this.props.build.status}>
-        <div class="head clickable" onClick={this.flipOpen.bind(this)}>
+        <div class="head clickable" onClick={this.flip.bind(this)}>
           <span>
             {this.props.build.status === 'success' ? 'PASS' : 'FAIL'}&nbsp;-&nbsp;
           </span>
           {this.props.build.name}
         </div>
-        {this.renderBuildDetails()}
+        <div class="content">
+          <div class="code">{this.props.build.output}</div>
+        </div>
       </div>
     </div>
   }

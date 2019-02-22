@@ -64,16 +64,6 @@ func (s *Server) Listen() {
 		json.NewEncoder(w).Encode(builds)
 	})
 
-	// GET : Build's output
-	r.Get("/build/output/{buildID}", func(w http.ResponseWriter, r *http.Request) {
-		output, err := s.Store.GetBuildOutput(chi.URLParam(r, "buildID"))
-		if err != nil {
-			w.WriteHeader(404)
-			fmt.Fprint(w, "No builds found")
-		}
-		fmt.Fprint(w, output)
-	})
-
 	r.Handle("/static", http.FileServer(http.Dir("/ui/dist")))
 
 	go s.Queuer.Start(func(history *model.BuildHistory) {
