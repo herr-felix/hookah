@@ -54,12 +54,7 @@ func TestGetBuild(t *testing.T) {
 		t.Fail()
 	}
 
-	output, err := store.GetBuildOutput("test")
-	if err != nil {
-		t.Error(err)
-	}
-
-	if output != "Bonjour" {
+	if h.Output != "Bonjour" {
 		t.Fail()
 	}
 

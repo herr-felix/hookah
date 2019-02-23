@@ -1,0 +1,22 @@
+{{define "title" }} Hookah: All projects {{end}}
+{{define "content"}} 
+
+<div class="boxes">
+  {{range .}}
+    <div class="project-boxes {{.Status}}">
+      <a href="/builds/{{.ProjectName}}" class="project-name">
+        {{.ProjectName}}
+        <span>
+          &nbsp;-&nbsp;
+          {{if eq .Status "success"}}
+          PASS
+          {{else}}
+          FAIL
+          {{end}}
+        </span>
+      </a>
+    </div>
+  {{end}}
+</div>
+
+{{end}}

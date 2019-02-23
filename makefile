@@ -1,3 +1,7 @@
+style:
+# you need `lessc` and `clean-css-cli`
+	lessc "./ui/src/style/style.less" | cleancss -o ./ui/dist/style.min.css
+
 buildspaces:
 	docker build ./buildspaces/alpine -t felixfx/buildspace:alpine
 

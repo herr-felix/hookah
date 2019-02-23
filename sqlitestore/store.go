@@ -98,6 +98,7 @@ func (s *SqliteStore) GetAllBuilds(projectName string) ([]*model.BuildHistory, e
 			&b.Start,
 			&b.Duration,
 			&b.Status,
+			&b.Output,
 		)
 		if err != nil {
 			return nil, err

@@ -22,31 +22,30 @@ body {
   height: 120px;
   background-color: gray;
   color: white;
-  cursor: pointer;
   border-radius: 4px;
   .project-name {
     font-size: 20px;
   }
-  &.success {
-    background-color: @success-color;
-  }
-  &.failure {
-    background-color: @failed-color;
-  }
 }
 
+&.success {
+  background-color: @success-color !important;
+}
+&.failure {
+  background-color: @failed-color !important;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
 .panel {
   margin-bottom: 32px;
   background-color: @default-color;
   border-radius: 4px;
   width: @page-width;
   padding: 3px;
-  &.success {
-    background-color: @success-color;
-  }
-  &.failure {
-    background-color: @failed-color;
-  }
   .head {
     color: white;
     padding: 16px;
