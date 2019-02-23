@@ -1,18 +1,9 @@
 {
   "name": "hookah-ui",
   "version": "1.0.0",
-  "scripts": {
-    "build": "parcel build src/index.html"
-  },
   "dependencies": {
-    "@types/luxon": "^1.11.0",
-    "luxon": "^1.11.1",
-    "preact": "^8.4.2",
-    "preact-router": "^2.6.1"
+    "clean-css-cli": "^4.2.1",
+    "less": "^3.9.0"
   },
-  "devDependencies": {
-    "cssnano": "^4.1.8",
-    "less": "^3.9.0",
-    "typescript": "^3.3.3"
-  }
+  "devDependencies": {}
 }
