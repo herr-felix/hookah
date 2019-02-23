@@ -72,7 +72,7 @@ func (s *Server) setupRoutes() chi.Router {
 		// Decode the body to a model.BuildRequest
 		var buildRequest *model.BuildRequest
 
-		if err := json.NewDecoder(r.Body).Decode(buildRequest); err != nil {
+		if err := json.NewDecoder(r.Body).Decode(&buildRequest); err != nil {
 			w.WriteHeader(400)
 			w.Write([]byte("Could not bind the body to a build request."))
 			return
