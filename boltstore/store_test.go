@@ -1,4 +1,4 @@
-package sqlitestore
+package boltstore
 
 import (
 	"os"
@@ -7,11 +7,14 @@ import (
 	"../model"
 )
 
-func getStore() *SqliteStore {
+func getStore() *BoltStore {
 	dbPath := "./test.db"
 	os.Remove(dbPath)
 
-	store, _ := NewSqliteStore(dbPath)
+	store, err := NewBoltStore(dbPath)
+	if err != nil {
+		panic(err)
+	}
 	return store
 }
 
@@ -19,7 +22,7 @@ func TestCreateDB(t *testing.T) {
 	dbPath := "./test.db"
 	os.Remove(dbPath)
 
-	_, err := NewSqliteStore(dbPath)
+	_, err := NewBoltStore(dbPath)
 	if err != nil {
 		t.Error(err)
 	}
@@ -29,35 +32,12 @@ func TestSaveBuild(t *testing.T) {
 
 	store := getStore()
 
-	testBuild := &model.BuildHistory{}
+	testBuild := &model.BuildHistory{ID: "TEST", ProjectName: "pako"}
 
 	err := store.SaveBuild(testBuild)
 	if err != nil {
 		t.Error(err)
 	}
-}
-
-func TestGetBuild(t *testing.T) {
-
-	store := getStore()
-
-	testBuild := &model.BuildHistory{ID: "test", Output: "Bonjour"}
-	store.SaveBuild(testBuild)
-
-	h, err := store.GetBuild("test")
-
-	if err != nil {
-		t.Error(err)
-	}
-
-	if h.ID != "test" {
-		t.Fail()
-	}
-
-	if h.Output != "Bonjour" {
-		t.Fail()
-	}
-
 }
 
 func TestGetLastBuilds(t *testing.T) {
@@ -66,8 +46,8 @@ func TestGetLastBuilds(t *testing.T) {
 	testBuilds := []*model.BuildHistory{
 		&model.BuildHistory{ID: "A1", ProjectName: "A", Start: 5},
 		&model.BuildHistory{ID: "A2", ProjectName: "A", Start: 4},
-		&model.BuildHistory{ID: "B1", ProjectName: "B", Start: 9},
-		&model.BuildHistory{ID: "B2", ProjectName: "B", Start: 7},
+		&model.BuildHistory{ID: "B1", ProjectName: "B", Start: 7},
+		&model.BuildHistory{ID: "B2", ProjectName: "B", Start: 9},
 		&model.BuildHistory{ID: "C1", ProjectName: "C", Start: 3},
 		&model.BuildHistory{ID: "C2", ProjectName: "C", Start: 2},
 	}
@@ -78,22 +58,22 @@ func TestGetLastBuilds(t *testing.T) {
 
 	latests, err := store.GetLatestBuilds()
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if len(latests) != 3 {
-		t.Error("Rows count should be 3. It is", len(latests))
+		t.Fatal("Rows count should be 3. It is", len(latests))
 	}
 
-	if latests[0].ID != "B1" {
-		t.Fail()
+	if latests[0].ID != "B2" {
+		t.Fatal("latests[0].ID should be 'B2', is", latests[0].ID)
 	}
 
-	if latests[1].ID != "A1" {
-		t.Fail()
+	if latests[1].ID != "A2" {
+		t.Fatal("latests[1].ID should be 'A2', is", latests[1].ID)
 	}
 
-	if latests[2].ID != "C1" {
-		t.Fail()
+	if latests[2].ID != "C2" {
+		t.Fatal("latests[2].ID should be 'C2', is", latests[2].ID)
 	}
 
 }
@@ -105,8 +85,8 @@ func TestGetAllBuilds(t *testing.T) {
 	testBuilds := []*model.BuildHistory{
 		&model.BuildHistory{ID: "A1", ProjectName: "A", Start: 5},
 		&model.BuildHistory{ID: "A2", ProjectName: "A", Start: 4},
-		&model.BuildHistory{ID: "B1", ProjectName: "B", Start: 9},
-		&model.BuildHistory{ID: "B2", ProjectName: "B", Start: 7},
+		&model.BuildHistory{ID: "B1", ProjectName: "B", Start: 7},
+		&model.BuildHistory{ID: "B2", ProjectName: "B", Start: 9},
 		&model.BuildHistory{ID: "C1", ProjectName: "C", Start: 3},
 		&model.BuildHistory{ID: "C2", ProjectName: "C", Start: 2},
 	}
@@ -117,17 +97,17 @@ func TestGetAllBuilds(t *testing.T) {
 
 	all, err := store.GetAllBuilds("B")
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if len(all) != 2 {
-		t.Error("Rows count should be 2. It is", len(all))
+		t.Fatal("Rows count should be 2. It is", len(all))
 	}
 
-	if all[0].ID != "B1" {
+	if all[0].ID != "B2" {
 		t.Fail()
 	}
 
-	if all[1].ID != "B2" {
+	if all[1].ID != "B1" {
 		t.Fail()
 	}
 }

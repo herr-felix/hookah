@@ -1,5 +1,7 @@
 package model
 
+import "sort"
+
 // BuildStatus is either 'successful' or 'failed'
 type BuildStatus string
 
@@ -20,6 +22,9 @@ type BuildHistory struct {
 	Output      string      `json:"output,omitempty"`
 }
 
+// BuildHistories ...
+type BuildHistories []*BuildHistory
+
 // BuildRequest ...
 type BuildRequest struct {
 	BuildPath   string `json:"buildPath"` // Where the building must happen, relative to the project's root. "." Most of the time
@@ -28,4 +33,32 @@ type BuildRequest struct {
 	PullParams  string `json:"pullParams"`
 	PushHandler string `json:"pushHandler"`
 	PushParams  string `json:"pushParams"`
+}
+
+// OrderByStart Orders all the build history by start. Decreasing.
+func (builds BuildHistories) OrderByStart() {
+	sorter := &buildHistorySorter{
+		builds: builds,
+		by: func(a, b *BuildHistory) bool {
+			return a.Start > b.Start
+		},
+	}
+	sort.Sort(sorter)
+}
+
+type buildHistorySorter struct {
+	builds []*BuildHistory
+	by     func(a, b *BuildHistory) bool
+}
+
+func (s *buildHistorySorter) Len() int {
+	return len(s.builds)
+}
+
+func (s *buildHistorySorter) Swap(i, j int) {
+	s.builds[i], s.builds[j] = s.builds[j], s.builds[i]
+}
+
+func (s *buildHistorySorter) Less(i, j int) bool {
+	return s.by(s.builds[i], s.builds[j])
 }

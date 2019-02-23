@@ -1,7 +1,7 @@
 package main
 
 import buildingspaces "./buildspaces/docker"
-import "./sqlitestore"
+import "./boltstore"
 
 func main() {
 	// Initialize the builspace
@@ -10,7 +10,7 @@ func main() {
 	queuer := NewBuildQueuer(dockerBuildSpace)
 
 	// Initialize the store
-	store, err := sqlitestore.NewSqliteStore("./hookah.db")
+	store, err := boltstore.NewBoltStore("./hookah.db")
 	if err != nil {
 		panic(err)
 	}
