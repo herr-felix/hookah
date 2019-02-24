@@ -11,8 +11,8 @@ const (
 	FailedBuild     BuildStatus = "failure"
 )
 
-// BuildHistory ..
-type BuildHistory struct {
+// BuildHistoryItem ..
+type BuildHistoryItem struct {
 	ID          string      `json:"id"`
 	Name        string      `json:"name"`
 	ProjectName string      `json:"projectName,omitempty"`
@@ -22,8 +22,8 @@ type BuildHistory struct {
 	Output      string      `json:"output,omitempty"`
 }
 
-// BuildHistories ...
-type BuildHistories []*BuildHistory
+// BuildHistory ...
+type BuildHistory []*BuildHistoryItem
 
 // BuildRequest ...
 type BuildRequest struct {
@@ -36,10 +36,10 @@ type BuildRequest struct {
 }
 
 // OrderByStart Orders all the build history by start. Decreasing.
-func (builds BuildHistories) OrderByStart() {
+func (builds BuildHistory) OrderByStart() {
 	sorter := &buildHistorySorter{
 		builds: builds,
-		by: func(a, b *BuildHistory) bool {
+		by: func(a, b *BuildHistoryItem) bool {
 			return a.Start > b.Start
 		},
 	}
@@ -47,8 +47,8 @@ func (builds BuildHistories) OrderByStart() {
 }
 
 type buildHistorySorter struct {
-	builds []*BuildHistory
-	by     func(a, b *BuildHistory) bool
+	builds BuildHistory
+	by     func(a, b *BuildHistoryItem) bool
 }
 
 func (s *buildHistorySorter) Len() int {

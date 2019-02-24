@@ -28,7 +28,7 @@ func toEnv(key, value string) string {
 }
 
 // Make execute the build request
-func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.BuildHistory, error) {
+func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.BuildHistoryItem, error) {
 
 	absHandlersPath, err := filepath.Abs(handlersPath)
 	if err != nil {
@@ -99,7 +99,7 @@ func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.Bui
 	buffer := bytes.NewBuffer([]byte{})
 	stdcopy.StdCopy(buffer, buffer, out)
 
-	return &model.BuildHistory{
+	return &model.BuildHistoryItem{
 		ID:          resp.ID, // sha256 of this?
 		Name:        "MAKE BUILD NAME DYNAMIC!",
 		ProjectName: req.ProjectName,

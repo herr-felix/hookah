@@ -22,10 +22,10 @@ func NewBuildQueuer(buildspace model.BuildingSpace) *BuildQueuer {
 }
 
 // Start ...
-func (q *BuildQueuer) Start(onBuildEnd func(*model.BuildHistory)) {
-	buildLogger := make(chan *model.BuildHistory, 1)
+func (q *BuildQueuer) Start(onBuildEnd func(*model.BuildHistoryItem)) {
+	buildLogger := make(chan *model.BuildHistoryItem, 1)
 
-	go func(logger chan *model.BuildHistory) {
+	go func(logger chan *model.BuildHistoryItem) {
 		for history := range logger {
 			log.Println("Build logged")
 			log.Println(history)

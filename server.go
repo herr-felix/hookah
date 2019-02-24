@@ -129,7 +129,7 @@ func (s *Server) Listen() {
 
 	r := s.setupRoutes()
 
-	go s.Queuer.Start(func(history *model.BuildHistory) {
+	go s.Queuer.Start(func(history *model.BuildHistoryItem) {
 		err := s.Store.SaveBuild(history)
 		if err != nil {
 			log.Println(err)

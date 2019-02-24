@@ -32,7 +32,7 @@ func TestSaveBuild(t *testing.T) {
 
 	store := getStore()
 
-	testBuild := &model.BuildHistory{ID: "TEST", ProjectName: "pako"}
+	testBuild := &model.BuildHistoryItem{ID: "TEST", ProjectName: "pako"}
 
 	err := store.SaveBuild(testBuild)
 	if err != nil {
@@ -43,13 +43,13 @@ func TestSaveBuild(t *testing.T) {
 func TestGetLastBuilds(t *testing.T) {
 	store := getStore()
 
-	testBuilds := []*model.BuildHistory{
-		&model.BuildHistory{ID: "A1", ProjectName: "A", Start: 5},
-		&model.BuildHistory{ID: "A2", ProjectName: "A", Start: 4},
-		&model.BuildHistory{ID: "B1", ProjectName: "B", Start: 7},
-		&model.BuildHistory{ID: "B2", ProjectName: "B", Start: 9},
-		&model.BuildHistory{ID: "C1", ProjectName: "C", Start: 3},
-		&model.BuildHistory{ID: "C2", ProjectName: "C", Start: 2},
+	testBuilds := model.BuildHistory{
+		&model.BuildHistoryItem{ID: "A1", ProjectName: "A", Start: 5},
+		&model.BuildHistoryItem{ID: "A2", ProjectName: "A", Start: 4},
+		&model.BuildHistoryItem{ID: "B1", ProjectName: "B", Start: 7},
+		&model.BuildHistoryItem{ID: "B2", ProjectName: "B", Start: 9},
+		&model.BuildHistoryItem{ID: "C1", ProjectName: "C", Start: 3},
+		&model.BuildHistoryItem{ID: "C2", ProjectName: "C", Start: 2},
 	}
 
 	for _, b := range testBuilds {
@@ -82,13 +82,13 @@ func TestGetAllBuilds(t *testing.T) {
 
 	store := getStore()
 
-	testBuilds := []*model.BuildHistory{
-		&model.BuildHistory{ID: "A1", ProjectName: "A", Start: 5},
-		&model.BuildHistory{ID: "A2", ProjectName: "A", Start: 4},
-		&model.BuildHistory{ID: "B1", ProjectName: "B", Start: 7},
-		&model.BuildHistory{ID: "B2", ProjectName: "B", Start: 9},
-		&model.BuildHistory{ID: "C1", ProjectName: "C", Start: 3},
-		&model.BuildHistory{ID: "C2", ProjectName: "C", Start: 2},
+	testBuilds := model.BuildHistory{
+		&model.BuildHistoryItem{ID: "A1", ProjectName: "A", Start: 5},
+		&model.BuildHistoryItem{ID: "A2", ProjectName: "A", Start: 4},
+		&model.BuildHistoryItem{ID: "B1", ProjectName: "B", Start: 7},
+		&model.BuildHistoryItem{ID: "B2", ProjectName: "B", Start: 9},
+		&model.BuildHistoryItem{ID: "C1", ProjectName: "C", Start: 3},
+		&model.BuildHistoryItem{ID: "C2", ProjectName: "C", Start: 2},
 	}
 
 	for _, b := range testBuilds {

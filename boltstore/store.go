@@ -42,19 +42,19 @@ func (s *BoltStore) open() (*bolt.DB, error) {
 	return db, nil
 }
 
-func getAllFromBucket(s *BoltStore, key string) (model.BuildHistories, error) {
+func getAllFromBucket(s *BoltStore, key string) (model.BuildHistory, error) {
 	db, err := s.open()
 	if err != nil {
 		return nil, err
 	}
 	defer db.Close()
 
-	var builds model.BuildHistories
+	var builds model.BuildHistory
 	err = db.View(func(tx *bolt.Tx) error {
 
 		err := tx.Bucket([]byte(key)).ForEach(func(k, v []byte) error {
 
-			var build *model.BuildHistory
+			var build *model.BuildHistoryItem
 
 			err = json.Unmarshal(v, &build)
 			if err != nil {
@@ -77,7 +77,7 @@ func getAllFromBucket(s *BoltStore, key string) (model.BuildHistories, error) {
 }
 
 // GetAllBuilds get all the builds history of a project
-func (s *BoltStore) GetAllBuilds(projectName string) (model.BuildHistories, error) {
+func (s *BoltStore) GetAllBuilds(projectName string) (model.BuildHistory, error) {
 
 	builds, err := getAllFromBucket(s, ":"+projectName+":")
 
@@ -91,7 +91,7 @@ func (s *BoltStore) GetAllBuilds(projectName string) (model.BuildHistories, erro
 }
 
 // GetLatestBuilds get the latest build history for each projects
-func (s *BoltStore) GetLatestBuilds() (model.BuildHistories, error) {
+func (s *BoltStore) GetLatestBuilds() (model.BuildHistory, error) {
 
 	builds, err := getAllFromBucket(s, latestBucketKey)
 
@@ -105,7 +105,7 @@ func (s *BoltStore) GetLatestBuilds() (model.BuildHistories, error) {
 }
 
 // SaveBuild saves a BuildHistory
-func (s *BoltStore) SaveBuild(data *model.BuildHistory) error {
+func (s *BoltStore) SaveBuild(data *model.BuildHistoryItem) error {
 	db, err := s.open()
 	if err != nil {
 		return err
@@ -132,6 +132,7 @@ func (s *BoltStore) SaveBuild(data *model.BuildHistory) error {
 		if err != nil {
 			return err
 		}
+		// TODO: Verify that `data` has a `.start` higher than what's currently in store
 		err = latestBucket.Put(projectName, blob)
 		if err != nil {
 			return err
