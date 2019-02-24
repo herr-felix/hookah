@@ -12,3 +12,6 @@ build: style
 docker: build buildspaces
 	docker build . -t felixfx/hookah:latest
 
+install_style:
+	cd ./ui && yarn install
+	mkdir ./ui/dist
