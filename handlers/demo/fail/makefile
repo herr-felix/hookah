@@ -1,6 +1,5 @@
-
 build: 
 	echo "Should fail" > note.txt
 
-all: build
+hookah: build
 	false

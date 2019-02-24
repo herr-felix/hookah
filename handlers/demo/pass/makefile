@@ -1,7 +1,5 @@
-
-
 build: 
 	echo "Should pass" > note.txt
 
-all: build
+hookah: build
 	echo "All done"

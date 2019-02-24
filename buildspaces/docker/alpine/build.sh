@@ -14,8 +14,7 @@ build() {
     return 1
   fi
 
-  # `make all` or `make hookah` or `hookahfile`?
-  make all
+  make hookah
   if [ "$?" -ne "0" ]; then
     echo "BUILD FAILED"
     return 1
