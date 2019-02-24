@@ -31,6 +31,32 @@
       {{.Name}}
     </label>
     <div class="content">
+      <table>
+        <tbody>
+          <tr>
+            <th>Start</th>
+            <td>{{.Start}}</td>
+            <th>Duration</th>
+            <td>{{.Duration}}</td>
+          </tr>
+          <tr>
+            <th>Build path</th>
+            <td>{{.Request.BuildPath}}</td>
+          </tr>
+          <tr>
+            <th>Pull Handler</th>
+            <td>{{.Request.PullHandler}}</td>
+            <th>Pull Params</th>
+            <td>{{.Request.PullParams}}</td>
+          </tr>
+          <tr>
+            <th>Push Handler</th>
+            <td>{{.Request.PushHandler}}</td>
+            <th>Push Params</th>
+            <td>{{.Request.PushParams}}</td>
+          </tr>
+        </tbody>
+      </table>
       <pre class="code">{{.Output}}</pre>
     </div>
   </div>

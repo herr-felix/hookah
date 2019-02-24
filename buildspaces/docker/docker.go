@@ -107,5 +107,6 @@ func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.Bui
 		Duration:    int64(time.Now().Sub(startTime).Seconds()),
 		Status:      buildStatus,
 		Output:      string(buffer.Bytes()),
+		Request:     req,
 	}, nil
 }
