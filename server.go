@@ -3,11 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
-	"io"
 	"log"
 	"net/http"
-	"path/filepath"
 	"strings"
 
 	"./model"
@@ -27,34 +24,6 @@ func NewServer(queuer *BuildQueuer, store BuildHistoryStore) *Server {
 		Store:  store,
 	}
 }
-
-type views struct {
-	templates map[string]*template.Template
-	root      []string
-}
-
-func (v *views) Register(name string) {
-	v.templates[name] = template.Must(template.New("").ParseFiles(
-		filepath.Join(append(v.root, "layout.html")...),
-		filepath.Join(append(v.root, name+".html")...),
-	))
-}
-
-func (v *views) Render(w io.Writer, name string, data interface{}) {
-	if tmpl, exists := v.templates[name]; exists {
-		tmpl.ExecuteTemplate(w, "base", data)
-		return
-	}
-	fmt.Fprintf(w, "Could not find template '%s'", name)
-}
-
-func loadViews(root string) *views {
-	return &views{
-		templates: make(map[string]*template.Template),
-		root:      strings.Split(root, "/"),
-	}
-}
-
 func wantsJSON(r *http.Request) bool {
 	return strings.HasPrefix(r.Header.Get("Accept"), "application/json")
 }
@@ -74,8 +43,7 @@ func (s *Server) setupRoutes() chi.Router {
 
 		if err := json.NewDecoder(r.Body).Decode(&buildRequest); err != nil {
 			w.WriteHeader(400)
-			fmt.Fprint(w, "Could not bind the body to a build request.")
-			fmt.Fprint(w, err)
+			fmt.Fprintf(w, "Could not bind the body to a build request:\n%s", err)
 			return
 		}
 		defer r.Body.Close()
@@ -90,7 +58,7 @@ func (s *Server) setupRoutes() chi.Router {
 		builds, err := s.Store.GetLatestBuilds()
 		if err != nil {
 			w.WriteHeader(500)
-			w.Write([]byte(fmt.Sprintf("Error while retrieving the latest builds: %e", err)))
+			fmt.Fprintf(w, "Error while retrieving the latest builds:\n%s", err)
 		}
 		if wantsJSON(r) {
 			w.Header().Add("Content-Type", "application/json")
@@ -98,16 +66,15 @@ func (s *Server) setupRoutes() chi.Router {
 			return
 		}
 		w.Header().Add("Content-Type", "text/html")
-
 		views.Render(w, "all_builds", builds)
 	})
 
 	// GET : All Builds by project
 	r.Get("/project/{project}", func(w http.ResponseWriter, r *http.Request) {
-		builds, err := s.Store.GetAllBuilds(chi.URLParam(r, "project"))
+		projectName := chi.URLParam(r, "project")
+		builds, err := s.Store.GetAllBuilds(projectName)
 		if err != nil {
-			log.Println(err)
-			fmt.Fprintf(w, "No builds with the projectName '%s'", chi.URLParam(r, "project"))
+			fmt.Fprintf(w, "No builds with the projectName '%s'\n%s", projectName, err)
 			return
 		}
 		if wantsJSON(r) {
