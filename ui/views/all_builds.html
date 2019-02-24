@@ -1,19 +1,11 @@
 {{define "title" }} Hookah: All projects {{end}}
 {{define "content"}} 
-
 <h1>Latest builds from all projects</h1>
-
 {{range .}}
 <a href="/builds/{{.ProjectName}}" class="project-box {{.Status}}">
-  {{.ProjectName}}
-  <span>
-    &nbsp;-&nbsp;
-    {{if eq .Status "success"}}
-    PASS 🌟
-    {{else}}
-    FAIL 🔥
-    {{end}}
-  </span>
+  <strong>{{.ProjectName}}</strong>
+  <br>
+  <small>{{if eq .Status "success"}}PASS 🌟{{else}}FAIL 🔥{{end}}</small>
 </a>
 {{end}}
 
