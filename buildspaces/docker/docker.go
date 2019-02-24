@@ -43,7 +43,7 @@ func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.Bui
 	cli.NegotiateAPIVersion(ctx)
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image: "buildspace:docker",
+		Image: "felixfx/buildspace:alpine", // TODO: custom buildspace image
 		Env: []string{
 			toEnv("BUILD_PATH", req.BuildPath),
 			toEnv("PULL_HANDLER", req.PullHandler),
