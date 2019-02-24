@@ -5,9 +5,10 @@
 {{end}}
 {{define "content"}}
 
+{{$buildsCount := len .}}
 
 {{ with index . 0 }}
-  <h1> {{.ProjectName}}</h1>
+  <h1> {{.ProjectName}} ({{$buildsCount}})</h1>
 {{end}}
 
 <a href="/"> ◀ Back to projects </a>
