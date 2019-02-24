@@ -30,6 +30,7 @@ type BuildHistory []*BuildHistoryItem
 type BuildRequest struct {
 	BuildPath   string `json:"buildPath"` // Where the building must happen, relative to the project's root. "." Most of the time
 	ProjectName string `json:"projectName"`
+	BuildName   string `json:"buildName"`
 	PullHandler string `json:"pullHandler"`
 	PullParams  string `json:"pullParams"`
 	PushHandler string `json:"pushHandler"`

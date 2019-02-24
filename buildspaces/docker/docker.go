@@ -3,7 +3,6 @@ package buildingspaces
 import (
 	"bytes"
 	"context"
-	"log"
 	"path/filepath"
 	"time"
 
@@ -85,7 +84,6 @@ func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.Bui
 			return nil, err
 		}
 	case status := <-statusCh:
-		log.Println(status)
 		if status.StatusCode != 0 {
 			buildStatus = model.FailedBuild
 		}
@@ -101,7 +99,7 @@ func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.Bui
 
 	return &model.BuildHistoryItem{
 		ID:          resp.ID, // sha256 of this?
-		Name:        "MAKE BUILD NAME DYNAMIC!",
+		Name:        req.BuildName,
 		ProjectName: req.ProjectName,
 		Start:       startTime.Unix(),
 		Duration:    int64(time.Now().Sub(startTime).Seconds()),

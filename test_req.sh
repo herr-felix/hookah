@@ -1,15 +1,17 @@
 #!/bin/bash
 
-name=$1
+projectName=$1
 status=$2
+buildName=$3
 
 payload="{
   \"buildPath\":\"./$status\",
-  \"projectName\":\"$name\",
+  \"projectName\":\"$projectName\",
+  \"buildName\": \"$buildName\",
   \"pullHandler\":\"demo\",
   \"pullParams\":\"\",
   \"pushHandler\":\"docker\",
-  \"pushParams\":\"testing/$name:latest\"
+  \"pushParams\":\"testing/$projectName:latest\"
 }"
 
 curl -X POST -H "Content-Type: application/json" -d "$payload" http://localhost:8080/build

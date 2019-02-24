@@ -74,13 +74,15 @@ func (s *Server) setupRoutes() chi.Router {
 
 		if err := json.NewDecoder(r.Body).Decode(&buildRequest); err != nil {
 			w.WriteHeader(400)
-			w.Write([]byte("Could not bind the body to a build request."))
+			fmt.Fprint(w, "Could not bind the body to a build request.")
+			fmt.Fprint(w, err)
 			return
 		}
 		defer r.Body.Close()
+
 		todo := s.Queuer.Queue(buildRequest)
 		log.Println("Build requested")
-		w.Write([]byte(string(todo)))
+		fmt.Fprint(w, todo)
 	})
 
 	// GET : Latest Builds
@@ -135,7 +137,6 @@ func (s *Server) Listen() {
 			log.Println(err)
 			return
 		}
-		log.Println(history)
 		// Do any kind of notification here
 	})
 
