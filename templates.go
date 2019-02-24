@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"path/filepath"
 	"strings"
 )
@@ -22,7 +23,10 @@ func (v *views) Register(name string) {
 
 func (v *views) Render(w io.Writer, name string, data interface{}) {
 	if tmpl, exists := v.templates[name]; exists {
-		tmpl.ExecuteTemplate(w, "base", data)
+		err := tmpl.ExecuteTemplate(w, "base", data)
+		if err != nil {
+			log.Println(err)
+		}
 		return
 	}
 	fmt.Fprintf(w, "Could not find template '%s'", name)

@@ -33,8 +33,8 @@ func (s *Server) setupRoutes() chi.Router {
 	r := chi.NewRouter()
 
 	views := loadViews("./ui/views/")
-	views.Register("all_builds")
-	views.Register("project_builds")
+	views.Register("root")
+	views.Register("project")
 
 	// POST : Build Request
 	r.Post("/build", func(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +66,7 @@ func (s *Server) setupRoutes() chi.Router {
 			return
 		}
 		w.Header().Add("Content-Type", "text/html")
-		views.Render(w, "all_builds", builds)
+		views.Render(w, "root", builds)
 	})
 
 	// GET : All Builds by project
@@ -74,6 +74,7 @@ func (s *Server) setupRoutes() chi.Router {
 		projectName := chi.URLParam(r, "project")
 		builds, err := s.Store.GetAllBuilds(projectName)
 		if err != nil {
+			w.WriteHeader(500)
 			fmt.Fprintf(w, "No builds with the projectName '%s'\n%s", projectName, err)
 			return
 		}
@@ -82,8 +83,13 @@ func (s *Server) setupRoutes() chi.Router {
 			json.NewEncoder(w).Encode(builds)
 			return
 		}
+		if len(builds) == 0 {
+			w.WriteHeader(500)
+			fmt.Fprint(w, "Project not found")
+			return
+		}
 		w.Header().Add("Content-Type", "text/html")
-		views.Render(w, "project_builds", builds)
+		views.Render(w, "project", builds)
 	})
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {

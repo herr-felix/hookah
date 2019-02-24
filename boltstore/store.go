@@ -52,7 +52,12 @@ func getAllFromBucket(s *BoltStore, key string) (model.BuildHistory, error) {
 	var builds model.BuildHistory
 	err = db.View(func(tx *bolt.Tx) error {
 
-		err := tx.Bucket([]byte(key)).ForEach(func(k, v []byte) error {
+		bkt := tx.Bucket([]byte(key))
+		if bkt == nil {
+			return nil
+		}
+
+		err := bkt.ForEach(func(k, v []byte) error {
 
 			var build *model.BuildHistoryItem
 
