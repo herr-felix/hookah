@@ -2,7 +2,7 @@ body {
   font-family: sans-serif;
 }
 
-@page-width: 1020px;
+@page-width: 1024px;
 
 @success-color: limegreen;
 @failed-color: red;
@@ -13,19 +13,22 @@ body {
   margin: 0 auto;
 }
 
-.project-boxes {
+.project-box {
   display: inline-block;
   padding: 16px;
   box-sizing: border-box;
   margin: 8px;
-  width: 324px;
+  width: 322px;
   height: 120px;
   background-color: gray;
-  color: white;
   border-radius: 4px;
-  .project-name {
-    font-size: 20px;
-  }
+  font-size: 20px;
+  color: white;
+  text-decoration: none;
+}
+
+h1 {
+  text-align: center;
 }
 
 &.success {
@@ -35,41 +38,36 @@ body {
   background-color: @failed-color !important;
 }
 
-ul {
-  padding: 0;
-  margin: 0;
-  list-style-type: none;
-}
 .panel {
-  margin-bottom: 32px;
-  background-color: @default-color;
   border-radius: 4px;
   width: @page-width;
   padding: 3px;
   .head {
+    display: block;
     color: white;
     padding: 16px;
-    &.title {
-      font-size: 24px;
-    }
-    &.clickable {
+  }
+  [type="checkbox"].toggle {
+    display: none;
+    ~ .head {
       cursor: pointer;
+    }
+    &:not(:checked) ~ .content {
+      display: none;
     }
   }
   .content {
-    border-radius: 4px;
+    border-radius: 0 0 4px 4px;
     padding: 8px;
     color: #111;
     background-color: white;
-    table {
-      width: 100%;
-    }
+    
   }
 }
+
 .code {
   font-family: 'Courier New', Courier, monospace;
   background-color: #ddd;
   color: #333;
-  padding: 1em;
-  white-space: pre-line;
+  padding: 0.8em;
 }

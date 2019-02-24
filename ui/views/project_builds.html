@@ -3,61 +3,37 @@
     {{.ProjectName}} - Hookah
   {{end}}
 {{end}}
-{{define "content"}} 
+{{define "content"}}
+
 
 {{ with index . 0 }}
-  <div class="panel">
-    <div class="head title">{{.ProjectName}}</div>
-    <div class="content">
-      <table>
-        <tr>
-          <td>
-            <strong>Last build:&nbsp;</strong>
-            {{.Start}}
-          </td>
-        </tr>
-      </table>
-    </div>
-  </div>
+  <h1> {{.ProjectName}}</h1>
 {{end}}
 
-<noscript>
-  <ul>
-    {{ range . }}
-      <li>
-        <a href="#{{.ID}}">
-          {{if eq .Status "success"}}
-          PASS
-          {{else}}
-          FAIL
-          {{end}}
-          &nbsp;-&nbsp;
-          {{.Name}}
-        </a>
-      </li>
-    {{end}}
-  </ul>
-</noscript>
+<a href="/builds"> ◀ Back to projects </a>
 
-<ul>
+<br/>
+<br/>
+
 {{ range . }}
-  <li class="panel {{.Status}}" id="{{.ID}}">
-    <div class="head clickable">
+  <div class="panel {{.Status}}" id="{{.ID}}">
+    <input type="checkbox" class="toggle" id="toggle-{{.ID}}">
+    <label class="head clickable" for="toggle-{{.ID}}">
       <strong>
         {{if eq .Status "success"}}
-        PASS
+        🌟 PASS
         {{else}}
-        FAIL
+        🔥 FAIL
         {{end}}
       </strong>
       &nbsp;-&nbsp;
       {{.Name}}
-    </div>
+    </label>
     <div class="content">
       <pre class="code">{{.Output}}</pre>
     </div>
-  </li>
+  </div>
+  <br/>
 {{end}}
-</ul>
 
 {{end}}
