@@ -25,7 +25,7 @@
 
 {{ range . }}
   <div class="panel {{.Status}}" id="{{.ID}}">
-    <input type="checkbox" class="toggle" id="toggle-{{.ID}}">
+    <input type="checkbox" class="toggle" name="{{.ID}}" id="toggle-{{.ID}}">
     <label class="head clickable" for="toggle-{{.ID}}">
       <strong>
         {{if eq .Status "success"}}

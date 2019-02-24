@@ -2,7 +2,7 @@
 {{define "content"}} 
 <h1>All Projects ({{ len . }})</h1>
 {{range .}}
-<a href="/project/{{.ProjectName}}" class="project-box {{.Status}}">
+<a href="/project/{{.ProjectName}}" class="project {{.Status}}">
   <strong>{{.ProjectName}}</strong>
   <br>
   <small>{{if eq .Status "success"}}PASS 🌟{{else}}FAIL 🔥{{end}}</small>
