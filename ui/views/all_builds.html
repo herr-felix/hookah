@@ -1,8 +1,8 @@
-{{define "title" }} Hookah: All projects {{end}}
+{{define "title" }} Hookah: All Projects {{end}}
 {{define "content"}} 
-<h1>Latest builds from all projects</h1>
+<h1>All Projects ({{ len . }})</h1>
 {{range .}}
-<a href="/builds/{{.ProjectName}}" class="project-box {{.Status}}">
+<a href="/project/{{.ProjectName}}" class="project-box {{.Status}}">
   <strong>{{.ProjectName}}</strong>
   <br>
   <small>{{if eq .Status "success"}}PASS 🌟{{else}}FAIL 🔥{{end}}</small>

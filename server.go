@@ -84,7 +84,7 @@ func (s *Server) setupRoutes() chi.Router {
 	})
 
 	// GET : Latest Builds
-	r.Get("/builds", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		builds, err := s.Store.GetLatestBuilds()
 		if err != nil {
 			w.WriteHeader(500)
@@ -101,7 +101,7 @@ func (s *Server) setupRoutes() chi.Router {
 	})
 
 	// GET : All Builds by project
-	r.Get("/builds/{project}", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/project/{project}", func(w http.ResponseWriter, r *http.Request) {
 		builds, err := s.Store.GetAllBuilds(chi.URLParam(r, "project"))
 		if err != nil {
 			log.Println(err)
