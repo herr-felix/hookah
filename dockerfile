@@ -1,7 +1,9 @@
 FROM alpine
 
-COPY ./ui/dist /ui/dist
+WORKDIR /opt/hookah
 
-COPY ./hookah /hookah
+COPY ./ui/dist ./ui/dist
 
-ENTRYPOINT ["/hookah"]
+COPY ./hookah ./hookah
+
+ENTRYPOINT ["/bin/sh", "./hookah"]
