@@ -2,7 +2,7 @@ FROM docker
 
 WORKDIR /root/build
 
-RUN apk add make git
+RUN apk add make git openssh ca-certificates
 
 COPY ./build.sh /
 
