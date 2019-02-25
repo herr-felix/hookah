@@ -3,7 +3,6 @@ package buildingspaces
 import (
 	"bytes"
 	"context"
-	"log"
 	"path/filepath"
 	"time"
 
@@ -28,7 +27,7 @@ func toEnv(key, value string) string {
 }
 
 // Make execute the build request
-func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.BuildHistory, error) {
+func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.BuildHistoryItem, error) {
 
 	absHandlersPath, err := filepath.Abs(handlersPath)
 	if err != nil {
@@ -43,7 +42,7 @@ func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.Bui
 	cli.NegotiateAPIVersion(ctx)
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image: "buildspace:docker",
+		Image: "felixfx/buildspace:alpine", // TODO: custom buildspace image
 		Env: []string{
 			toEnv("BUILD_PATH", req.BuildPath),
 			toEnv("PULL_HANDLER", req.PullHandler),
@@ -85,7 +84,6 @@ func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.Bui
 			return nil, err
 		}
 	case status := <-statusCh:
-		log.Println(status)
 		if status.StatusCode != 0 {
 			buildStatus = model.FailedBuild
 		}
@@ -99,13 +97,14 @@ func (dbs *Docker) Make(req model.BuildRequest, handlersPath string) (*model.Bui
 	buffer := bytes.NewBuffer([]byte{})
 	stdcopy.StdCopy(buffer, buffer, out)
 
-	return &model.BuildHistory{
+	return &model.BuildHistoryItem{
 		ID:          resp.ID, // sha256 of this?
-		Name:        "MAKE BUILD NAME DYNAMIC!",
+		Name:        req.BuildName,
 		ProjectName: req.ProjectName,
 		Start:       startTime.Unix(),
 		Duration:    int64(time.Now().Sub(startTime).Seconds()),
 		Status:      buildStatus,
 		Output:      string(buffer.Bytes()),
+		Request:     req,
 	}, nil
 }

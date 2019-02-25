@@ -1,0 +1,14 @@
+{{define "title" }} Hookah: All Projects {{end}}
+{{define "content"}} 
+<h1>All Projects ({{ len . }})</h1>
+{{range .}}
+<a href="/project/{{.ProjectName}}" class="project {{.Status}}">
+  <strong>{{.ProjectName}}</strong>
+  <br>
+  <small>{{if eq .Status "success"}}PASS 🌟{{else}}FAIL 🔥{{end}}</small>
+</a>
+{{else}}
+<h1>Welcome to Hookah. Please request builds to see more stuff here!</h1> 
+{{end}}
+
+{{end}}

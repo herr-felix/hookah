@@ -1,11 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
+	"strings"
 
 	"./model"
-	"github.com/labstack/echo"
+	"github.com/go-chi/chi"
 )
 
 // Server ...
@@ -21,62 +24,95 @@ func NewServer(queuer *BuildQueuer, store BuildHistoryStore) *Server {
 		Store:  store,
 	}
 }
+func wantsJSON(r *http.Request) bool {
+	return strings.HasPrefix(r.Header.Get("Accept"), "application/json")
+}
 
-// Listen ...
-func (s *Server) Listen() {
-	e := echo.New()
+func (s *Server) setupRoutes() chi.Router {
+
+	r := chi.NewRouter()
+
+	views := loadViews("./ui/views/")
+	views.Register("root")
+	views.Register("project")
 
 	// POST : Build Request
-	e.POST("/build", func(c echo.Context) error {
+	r.Post("/build", func(w http.ResponseWriter, r *http.Request) {
 		// Decode the body to a model.BuildRequest
-		buildRequest := new(model.BuildRequest)
-		if err := c.Bind(buildRequest); err != nil {
-			return c.String(400, "Could not bind the body to a build request.")
+		var buildRequest *model.BuildRequest
+
+		if err := json.NewDecoder(r.Body).Decode(&buildRequest); err != nil {
+			w.WriteHeader(400)
+			fmt.Fprintf(w, "Could not bind the body to a build request:\n%s", err)
+			return
 		}
+		defer r.Body.Close()
+
 		todo := s.Queuer.Queue(buildRequest)
 		log.Println("Build requested")
-		return c.String(200, string(todo))
+		fmt.Fprint(w, todo)
 	})
 
 	// GET : Latest Builds
-	e.GET("/builds", func(c echo.Context) error {
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		builds, err := s.Store.GetLatestBuilds()
 		if err != nil {
-			return c.String(500, fmt.Sprintf("Error while retrieving the latest builds: %e", err))
+			w.WriteHeader(500)
+			fmt.Fprintf(w, "Error while retrieving the latest builds:\n%s", err)
 		}
-		return c.JSON(200, builds)
+		if wantsJSON(r) {
+			w.Header().Add("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(builds)
+			return
+		}
+		w.Header().Add("Content-Type", "text/html")
+		views.Render(w, "root", builds)
 	})
 
 	// GET : All Builds by project
-	e.GET("/builds/:project", func(c echo.Context) error {
-		builds, err := s.Store.GetAllBuilds(c.Param("project"))
+	r.Get("/project/{project}", func(w http.ResponseWriter, r *http.Request) {
+		projectName := chi.URLParam(r, "project")
+		builds, err := s.Store.GetAllBuilds(projectName)
 		if err != nil {
-			return c.String(404, fmt.Sprintf("No builds with the projectName '%s'", c.Param("project")))
+			w.WriteHeader(500)
+			fmt.Fprintf(w, "No builds with the projectName '%s'\n%s", projectName, err)
+			return
 		}
-		return c.JSON(200, builds)
+		if wantsJSON(r) {
+			w.Header().Add("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(builds)
+			return
+		}
+		if len(builds) == 0 {
+			w.WriteHeader(500)
+			fmt.Fprint(w, "Project not found")
+			return
+		}
+		w.Header().Add("Content-Type", "text/html")
+		views.Render(w, "project", builds)
 	})
 
-	// GET : Build's output
-	e.GET("/build/output/:buildID", func(c echo.Context) error {
-		output, err := s.Store.GetBuildOutput(c.Param("buildID"))
-		if err != nil {
-			return c.String(404, "No builds found")
-		}
-		return c.String(200, output)
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		http.StripPrefix("/static/", http.FileServer(http.Dir("./ui/dist/"))).ServeHTTP(w, r)
 	})
 
-	e.Static("/", "ui/dist/")
+	return r
+}
 
-	go s.Queuer.Start(func(history *model.BuildHistory) {
+// Listen ...
+func (s *Server) Listen() {
+
+	r := s.setupRoutes()
+
+	go s.Queuer.Start(func(history *model.BuildHistoryItem) {
 		err := s.Store.SaveBuild(history)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		log.Println(history)
 		// Do any kind of notification here
 	})
 
 	log.Println("Running on :8080")
-	e.Logger.Fatal(e.Start(":8080"))
+	panic(http.ListenAndServe(":8080", r))
 }

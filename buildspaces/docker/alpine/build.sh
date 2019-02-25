@@ -1,29 +1,32 @@
 build() {
   PROJECT_DIR=$( /bin/sh /opt/handlers/pull/$PULL_HANDLER.sh $PULL_PARAMS | tail -1 )
-  echo "Moving to $PROJECT_DIR"
+  echo "MOVING to $PROJECT_DIR"
   cd $PROJECT_DIR
   if [ "$?" -ne "0" ]; then
-    echo "Can't move to project '$PROJECT_DIR'"
+    echo "CAN'T MOVE TO PROJECT '$PROJECT_DIR'"
     return 1
   fi
 
-  echo "Moving to $BUILD_PATH"
+  echo "MOVING TO $BUILD_PATH"
   cd $BUILD_PATH
   if [ "$?" -ne "0" ]; then
-    echo "Moving to build path '$BUILD_PATH'"
+    echo "CAN'T MOVE TO BUILD PATH '$BUILD_PATH' INSIDE PROJECT '$PROJECT_DIR'"
     return 1
   fi
 
-  make all
+  make hookah
   if [ "$?" -ne "0" ]; then
-    echo "Build failed"
+    echo "BUILD FAILED"
     return 1
   fi
 
-	docker build . -t demo_go # REPLACE BY THE PUSH HANDLER
-  if [ "$?" -ne "0" ]; then
-    echo "Docker build failed"
-    return 1
+  # If there is a push handler
+  if [ $PUSH_HANDLER != "" ]; then
+    /bin/sh "/opt/handlers/push/docker.sh" $PUSH_PARAMS
+    if [ "$?" -ne "0" ]; then
+      echo "PUSH FAILED"
+      return 1
+    fi
   fi
 }
 
