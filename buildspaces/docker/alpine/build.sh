@@ -22,7 +22,7 @@ build() {
 
   # If there is a push handler
   if [ $PUSH_HANDLER != "" ]; then
-    /bin/sh "/opt/handlers/push/docker.sh" $PUSH_PARAMS
+    /bin/sh "/opt/handlers/push/$PUSH_HANDLER.sh" $PUSH_PARAMS
     if [ "$?" -ne "0" ]; then
       echo "PUSH FAILED"
       return 1

@@ -1,9 +1,11 @@
 version: '3'
 services:
   hookah:
+    container_name: hookah
     image: "felixfx/hookah"
     volumes: 
-      - "./handlers:/opt/hookah/handlers" # Change the src to whatever you want
+      - "/home/felix/src/herr-felix/hookah/handlers:/opt/hookah/handlers"
       - "/var/run/docker.sock:/var/run/docker.sock"
     ports:
       - "8080:8080"
+    network_mode: host

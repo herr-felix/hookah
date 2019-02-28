@@ -1,4 +1,4 @@
-# hookah
+# Hookah
 
 A simple build automation system
 
@@ -62,7 +62,7 @@ Same as the UI, but you get JSON. Simply set the request header `Accept` to `app
 Hahaha... Nobody has asked me anything yet. But prevention beats reaction.
 
 ### How can I request a build on each Github push?
-You need something that convert a Github Webhook request to a _build request_. A script doing _exactly this_ should be available shortly.
+You need something that convert a GitHub Webhook request to a _build request_. A script doing _exactly this_ should be available shortly.
 
 ### Can I make my builds on somethings else than Alpine Linux?
 The buildspace image will become dynamic (_parameterable_) eventually.
