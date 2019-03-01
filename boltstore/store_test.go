@@ -44,12 +44,12 @@ func TestGetLastBuilds(t *testing.T) {
 	store := getStore()
 
 	testBuilds := model.BuildHistory{
-		&model.BuildHistoryItem{ID: "A1", ProjectName: "A", Start: 4},
-		&model.BuildHistoryItem{ID: "A2", ProjectName: "A", Start: 5},
-		&model.BuildHistoryItem{ID: "B1", ProjectName: "B", Start: 7},
-		&model.BuildHistoryItem{ID: "B2", ProjectName: "B", Start: 9},
-		&model.BuildHistoryItem{ID: "C1", ProjectName: "C", Start: 3},
-		&model.BuildHistoryItem{ID: "C2", ProjectName: "C", Start: 2},
+		&model.BuildHistoryItem{ID: "A1", ProjectName: "A", Start: 4, Valid: true},
+		&model.BuildHistoryItem{ID: "A2", ProjectName: "A", Start: 5, Valid: true},
+		&model.BuildHistoryItem{ID: "B1", ProjectName: "B", Start: 7, Valid: true},
+		&model.BuildHistoryItem{ID: "B2", ProjectName: "B", Start: 9, Valid: true},
+		&model.BuildHistoryItem{ID: "C1", ProjectName: "C", Start: 3, Valid: true},
+		&model.BuildHistoryItem{ID: "C2", ProjectName: "C", Start: 2, Valid: true},
 	}
 
 	for _, b := range testBuilds {
@@ -95,7 +95,7 @@ func TestGetAllBuilds(t *testing.T) {
 		store.SaveBuild(b)
 	}
 
-	all, err := store.GetAllBuilds("B")
+	all, err := store.GetBuilds("B")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -126,7 +126,7 @@ func TestBuildInvalidation(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	all, err := store.GetAllBuilds("pako")
+	all, err := store.GetBuilds("pako")
 
 	// Should not have been valid
 	if all[0].Valid {

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 
 	"../model"
 	"github.com/boltdb/bolt"
@@ -17,21 +16,8 @@ type BoltStore struct {
 
 const latestBucketKey = "LATEST"
 
-// NewBoltStore ...
-func NewBoltStore(dbPath string) (*BoltStore, error) {
-	store := &BoltStore{dbPath: dbPath}
-
-	db, err := store.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	err = db.View(func(tx *bolt.Tx) error {
-		return <-tx.Check()
-	})
-
-	return store, nil
+func projectKey(name string) []byte {
+	return []byte(":" + name + ":")
 }
 
 func (s *BoltStore) open() (*bolt.DB, error) {
@@ -41,22 +27,6 @@ func (s *BoltStore) open() (*bolt.DB, error) {
 	}
 
 	return db, nil
-}
-
-func getBuild(tx *bolt.Tx, projectName, buildID string) (*model.BuildHistoryItem, error) {
-	history, err := getAllProjectBuilds(tx, []byte(":"+projectName+":"))
-	if err != nil {
-		return nil, err
-	}
-
-	for _, b := range history {
-		if b.ID == buildID {
-			continue
-		}
-		return b, nil
-	}
-
-	return nil, fmt.Errorf("Build '%s' not found in project '%s'", buildID, projectName)
 }
 
 func getAllProjectBuilds(tx *bolt.Tx, bucketKey []byte) (builds model.BuildHistory, err error) {
@@ -72,7 +42,6 @@ func getAllProjectBuilds(tx *bolt.Tx, bucketKey []byte) (builds model.BuildHisto
 
 		err := json.Unmarshal(v, &build)
 		if err != nil {
-			log.Println(err)
 			return err
 		}
 
@@ -80,66 +49,36 @@ func getAllProjectBuilds(tx *bolt.Tx, bucketKey []byte) (builds model.BuildHisto
 
 		return nil
 	})
+
+	builds.OrderByStart()
+
 	return builds, err
 }
 
-func getAllFromBucket(s *BoltStore, bucketKey []byte) (model.BuildHistory, error) {
-	db, err := s.open()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	var builds model.BuildHistory
-	err = db.View(func(tx *bolt.Tx) error {
-		builds, err = getAllProjectBuilds(tx, bucketKey)
-		return err
-	})
-
+func getBuild(tx *bolt.Tx, projectName, buildID string) (*model.BuildHistoryItem, error) {
+	// This could be optimized by not reading all the builds in a project
+	history, err := getAllProjectBuilds(tx, projectKey(projectName))
 	if err != nil {
 		return nil, err
 	}
 
-	return builds, nil
-}
-
-// GetAllBuilds get all the builds history of a project
-func (s *BoltStore) GetAllBuilds(projectName string) (model.BuildHistory, error) {
-
-	builds, err := getAllFromBucket(s, []byte(":"+projectName+":"))
-
-	if err != nil {
-		return nil, err
+	for _, b := range history {
+		if b.ID == buildID {
+			continue
+		}
+		return b, nil
 	}
 
-	builds.OrderByStart()
-
-	return builds, nil
-}
-
-// GetLatestBuilds get the latest build history for each projects
-func (s *BoltStore) GetLatestBuilds() (model.BuildHistory, error) {
-
-	builds, err := getAllFromBucket(s, []byte(latestBucketKey))
-
-	if err != nil {
-		return nil, err
-	}
-
-	builds.OrderByStart()
-
-	return builds, nil
+	return nil, fmt.Errorf("Build '%s' not found in project '%s'", buildID, projectName)
 }
 
 func saveBuild(tx *bolt.Tx, build *model.BuildHistoryItem) error {
-	projectName := []byte(":" + build.ProjectName + ":")
-
 	blob, err := json.Marshal(build)
 	if err != nil {
 		return err
 	}
 
-	projectBucket, err := tx.CreateBucketIfNotExists(projectName)
+	projectBucket, err := tx.CreateBucketIfNotExists(projectKey(build.ProjectName))
 	if err != nil {
 		return err
 	}
@@ -151,9 +90,6 @@ func saveBuild(tx *bolt.Tx, build *model.BuildHistoryItem) error {
 }
 
 func getLatest(history model.BuildHistory) (*model.BuildHistoryItem, error) {
-
-	// Makes sure it's ordered
-	history.OrderByStart()
 
 	var build *model.BuildHistoryItem
 
@@ -173,9 +109,7 @@ func setLatest(tx *bolt.Tx, projectName string) error {
 		return err
 	}
 
-	projectKey := []byte(":" + projectName + ":")
-
-	builds, err := getAllProjectBuilds(tx, projectKey)
+	builds, err := getAllProjectBuilds(tx, projectKey(projectName))
 	if err != nil {
 		return err
 	}
@@ -183,12 +117,60 @@ func setLatest(tx *bolt.Tx, projectName string) error {
 	latestBuild, err := getLatest(builds)
 	if err != nil {
 		// No non-archived builds were found
-		return latestBucket.Delete(projectKey)
+		return latestBucket.Delete(projectKey(projectName))
 	}
 
 	blob, err := json.Marshal(latestBuild)
 
-	return latestBucket.Put(projectKey, blob)
+	return latestBucket.Put(projectKey(projectName), blob)
+}
+
+func getAllFromBucket(s *BoltStore, bucketKey []byte) (builds model.BuildHistory, err error) {
+	db, err := s.open()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	err = db.View(func(tx *bolt.Tx) error {
+		builds, err = getAllProjectBuilds(tx, bucketKey)
+		return err
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return builds, nil
+}
+
+// NewBoltStore ...
+func NewBoltStore(dbPath string) (*BoltStore, error) {
+	store := &BoltStore{dbPath: dbPath}
+
+	db, err := store.open()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	err = db.View(func(tx *bolt.Tx) error {
+		return <-tx.Check()
+	})
+
+	return store, nil
+}
+
+// GetBuilds get all the builds history of a project
+func (s *BoltStore) GetBuilds(projectName string) (model.BuildHistory, error) {
+
+	return getAllFromBucket(s, projectKey(projectName))
+}
+
+// GetLatestBuilds get the latest build history for each projects
+func (s *BoltStore) GetLatestBuilds() (model.BuildHistory, error) {
+
+	return getAllFromBucket(s, []byte(latestBucketKey))
 }
 
 // SaveBuild saves a BuildHistory

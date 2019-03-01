@@ -72,7 +72,7 @@ func (s *Server) setupRoutes() chi.Router {
 	// GET : All Builds by project
 	r.Get("/project/{project}", func(w http.ResponseWriter, r *http.Request) {
 		projectName := chi.URLParam(r, "project")
-		builds, err := s.Store.GetAllBuilds(projectName)
+		builds, err := s.Store.GetBuilds(projectName)
 		if err != nil {
 			w.WriteHeader(500)
 			fmt.Fprintf(w, "No builds with the projectName '%s'\n%s", projectName, err)
