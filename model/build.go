@@ -21,6 +21,7 @@ type BuildHistoryItem struct {
 	Status      BuildStatus  `json:"status"`
 	Output      string       `json:"output,omitempty"`
 	Request     BuildRequest `json:"request"`
+	Valid       bool         `json:"valid"`
 }
 
 // BuildHistory ...

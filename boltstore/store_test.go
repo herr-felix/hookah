@@ -44,8 +44,8 @@ func TestGetLastBuilds(t *testing.T) {
 	store := getStore()
 
 	testBuilds := model.BuildHistory{
-		&model.BuildHistoryItem{ID: "A1", ProjectName: "A", Start: 5},
-		&model.BuildHistoryItem{ID: "A2", ProjectName: "A", Start: 4},
+		&model.BuildHistoryItem{ID: "A1", ProjectName: "A", Start: 4},
+		&model.BuildHistoryItem{ID: "A2", ProjectName: "A", Start: 5},
 		&model.BuildHistoryItem{ID: "B1", ProjectName: "B", Start: 7},
 		&model.BuildHistoryItem{ID: "B2", ProjectName: "B", Start: 9},
 		&model.BuildHistoryItem{ID: "C1", ProjectName: "C", Start: 3},
@@ -72,7 +72,7 @@ func TestGetLastBuilds(t *testing.T) {
 		t.Fatal("latests[1].ID should be 'A2', is", latests[1].ID)
 	}
 
-	if latests[2].ID != "C2" {
+	if latests[2].ID != "C1" {
 		t.Fatal("latests[2].ID should be 'C2', is", latests[2].ID)
 	}
 
@@ -109,5 +109,27 @@ func TestGetAllBuilds(t *testing.T) {
 
 	if all[1].ID != "B1" {
 		t.Fail()
+	}
+}
+
+func TestBuildInvalidation(t *testing.T) {
+
+	store := getStore()
+
+	testBuild1 := &model.BuildHistoryItem{ID: "TEST", ProjectName: "pako", Start: 2, Valid: true}
+	testBuild2 := &model.BuildHistoryItem{ID: "TEST2", ProjectName: "pako", Start: 4, Valid: true}
+	store.SaveBuild(testBuild1)
+	store.SaveBuild(testBuild2)
+
+	err := store.InvalidateBuild("pako", "TEST")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	all, err := store.GetAllBuilds("pako")
+
+	// Should not have been valid
+	if all[0].Valid {
+		t.Fatal("The build should not have been valid")
 	}
 }
