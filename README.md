@@ -2,16 +2,16 @@
 
 A simple build automation system
 
-It runs on port 8080. (should become a parameter in the future)
+It runs on port 8080. (should become configurable in the future)
 
 ## How it works
 
-Start the buildspace _docker container_ from the `felixfx/buildspace:alpine` image. The buildspace should become a dynamic in the future.
+Start the buildspace _docker container_ from the `felixfx/buildspace:alpine` image. The buildspace should become configurable in the future.
 
 - Run the `pullHandler` script with the `pullParams` as arguments
 - Moves into the repo. Then moves into a `buildPath`.
 - Run the `hookah` command of the project's **makefile** (make hookah)
-- Run the `pushHander` script with the `pushParams` as arguments
+- Run the `pushHandler` script with the `pushParams` as arguments
 
 All the logs are saved in the build history of each project.
 
